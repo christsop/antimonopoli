@@ -1,0 +1,19 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "api.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "jsdom": "^25.0.1",
+    "node-fetch": "^3.3.2",
+    "p-limit": "^6.2.0"
+  }
+}
