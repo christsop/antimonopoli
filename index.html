@@ -91,6 +91,114 @@
     </div>
 
     <script>
+      // Utility function to fetch and parse HTML
+async function fetchAndParseHTML(url) {
+    const response = await fetch(url);
+    const html = await response.text();
+    const parser = new DOMParser();
+    return parser.parseFromString(html, 'text/html');
+}
+
+// Function to get the total number of pages in the winners section
+async function getTotalPages() {
+    const url = 'https://www.monopoli.gr/diagonismoi/winners/';
+    const document = await fetchAndParseHTML(url);
+
+    const paginationLinks = document.querySelectorAll('.nav-links a.page-numbers');
+    let maxPage = 1;
+    paginationLinks.forEach(link => {
+        const pageNum = parseInt(link.textContent);
+        if (!isNaN(pageNum) && pageNum > maxPage) {
+            maxPage = pageNum;
+        }
+    });
+
+    return maxPage;
+}
+
+// Function to extract all event links from a page
+async function extractEventLinks(pageNumber) {
+    const url = `https://www.monopoli.gr/diagonismoi/winners/page/${pageNumber}/`;
+    const document = await fetchAndParseHTML(url);
+
+    const eventLinks = Array.from(document.querySelectorAll('.winners_contest_box')).map(link => link.href);
+    return eventLinks;
+}
+
+// Function to extract winners and event title from an event page
+async function extractEventDetails(eventUrl) {
+    const document = await fetchAndParseHTML(eventUrl);
+
+    // Extract winners
+    const winnersContainer = document.querySelector('.art_article_text.wrapptext p');
+    const winnersText = winnersContainer ? winnersContainer.textContent : '';
+    const winners = winnersText.split(/<br>|\n/).map(winner => winner.trim()).filter(winner => winner);
+
+    // Extract event title and clean it up
+    const titleElement = document.querySelector('.art_info_main_ti');
+    let eventTitle = titleElement ? titleElement.textContent : '';
+    eventTitle = eventTitle.replace('Νικητές Διαγωνισμού:', '').replace('Νικητες Διαγωνισμου:', '').trim();
+
+    return {
+        eventTitle,
+        winners
+    };
+}
+
+// Main function to process all pages and extract data
+async function scrapeWinners() {
+    const totalPages = await getTotalPages();
+    const allEventLinks = [];
+    const allEventDetails = [];
+    const concurrencyLimit = 5; // Adjust concurrency level
+
+    // Helper function for limiting concurrency
+    const asyncPool = async (poolLimit, array, asyncFn) => {
+        const results = [];
+        const executing = [];
+        for (const item of array) {
+            const p = Promise.resolve().then(() => asyncFn(item));
+            results.push(p);
+
+            if (poolLimit <= array.length) {
+                const e = p.then(() => executing.splice(executing.indexOf(e), 1));
+                executing.push(e);
+                if (executing.length >= poolLimit) {
+                    await Promise.race(executing);
+                }
+            }
+        }
+        return Promise.all(results);
+    };
+
+    // Fetch all event links concurrently
+    console.log('Fetching all event links...');
+    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+    const eventLinksPerPage = await asyncPool(concurrencyLimit, pageNumbers, extractEventLinks);
+    eventLinksPerPage.forEach(links => allEventLinks.push(...links));
+
+    console.log('Total event links fetched:', allEventLinks.length);
+
+    // Fetch all event details concurrently
+    console.log('Fetching event details...');
+    const eventDetails = await asyncPool(concurrencyLimit, allEventLinks, extractEventDetails);
+
+    console.log('Total event details fetched:', eventDetails.length);
+
+    // Combine event URLs with their respective details
+    eventDetails.forEach((details, index) => {
+        allEventDetails.push({
+            eventUrl: allEventLinks[index],
+            ...details
+        });
+    });
+
+    return allEventDetails;
+}
+
+
+
+
         const participants = [
             { gender: "Κος", firstname: "Χρήστος", lastname: "Τσοπέλας" },
             { gender: "Κος", firstname: "Λευτερης", lastname: "Μοριτς" },
@@ -159,12 +267,17 @@
             eventsList.innerHTML = '';
 
             try {
-                const response = await fetch('http://localhost:3000/winners');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                
+                // const winnersData = await scrapeWinners();
 
-                allEvents = await response.json();
+                
+                
+                // const response = await fetch('http://localhost:3000/winners');
+                // if (!response.ok) {
+                //     throw new Error('Network response was not ok');
+                // }
+
+                allEvents = await scrapeWinners();
                 renderCheckboxes(participants);
                 renderEvents(allEvents);
             } catch (error) {
