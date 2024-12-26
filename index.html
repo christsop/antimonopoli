@@ -98,6 +98,7 @@
             { gender: "Κος", firstname: "Σαραντος", lastname: "Τζορτζης" },
             { gender: "Κος", firstname: "Χρήστος", lastname: "Ραμαντάνης" },
             { gender: "Κα", firstname: "Ελένη", lastname: "Τσεντιδου" },
+            { gender: "Κα", firstname: "Ελένη", lastname: "Κοσεογλου" },
             { gender: "Κα", firstname: "Κωνσταντίνα", lastname: "Μαγκαφά" },
             { gender: "Κα", firstname: "αθηνα", lastname: "φλεγκα" },
             { gender: "Κος", firstname: "ιωαννης", lastname: "τσοπελας" }
@@ -159,7 +160,7 @@
             eventsList.innerHTML = '';
 
             try {
-                const response = await fetch('https://antimonopoli-api.vercel.app/winners');
+                const response = await fetch('http://localhost:4000/winners');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
