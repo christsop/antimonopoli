@@ -98,7 +98,6 @@
             { gender: "Κος", firstname: "Σαραντος", lastname: "Τζορτζης" },
             { gender: "Κος", firstname: "Χρήστος", lastname: "Ραμαντάνης" },
             { gender: "Κα", firstname: "Ελένη", lastname: "Τσεντιδου" },
-            { gender: "Κα", firstname: "Ελένη", lastname: "Κοσεογλου" },
             { gender: "Κα", firstname: "Κωνσταντίνα", lastname: "Μαγκαφά" },
             { gender: "Κα", firstname: "αθηνα", lastname: "φλεγκα" },
             { gender: "Κος", firstname: "ιωαννης", lastname: "τσοπελας" }
@@ -135,36 +134,32 @@
         }
 
         function applyFilters() {
-    // Get all checked checkboxes' last names
-    const checkedLastNames = Array.from(
-        checkboxContainer.querySelectorAll('.form-check-input:checked')
-    ).map(checkbox => removeAccents(checkbox.value.toLowerCase()));
+            const checkedLastNames = Array.from(
+                checkboxContainer.querySelectorAll('.form-check-input:checked')
+            ).map(checkbox => removeAccents(checkbox.value.toLowerCase()));
 
-    if (checkedLastNames.length === 0) {
-        // If no checkbox is selected, show all events
-        renderEvents(allEvents);
-        return;
-    }
+            if (checkedLastNames.length === 0) {
+                renderEvents(allEvents);
+                return;
+            }
 
-    // Filter events based on the selected checkboxes
-    const filteredEvents = allEvents.filter(event =>
-        event.winners.some(winner => {
-            // Normalize both the last name and the winner's name
-            const winnerNormalized = removeAccents(winner.toLowerCase());
-            return checkedLastNames.some(lastName => winnerNormalized.includes(lastName));
-        })
-    );
+            const filteredEvents = allEvents.filter(event =>
+                event.winners.some(winner => {
+                    const lastname = removeAccents(checkedLastNames[0]);
+                    const winnerNormalized = removeAccents(winner);
+                    return winnerNormalized.includes(lastname);
+                })
+            );
 
-    // Render the filtered events
-    renderEvents(filteredEvents);
-}
+            renderEvents(filteredEvents);
+        }
 
         async function fetchWinners() {
             loader.style.display = 'block';
             eventsList.innerHTML = '';
 
             try {
-                const response = await fetch('https://antimonopoli-api.vercel.app/winners');
+                const response = await fetch('http://localhost:4000/winners');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
