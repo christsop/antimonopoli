@@ -14,7 +14,7 @@
             color: #fff;
             font-family: 'Arial', sans-serif;
             position: relative;
-            overflow: hidden;
+            overflow: auto;  /* Allow scrolling */
         }
 
         .header-title {
@@ -124,6 +124,7 @@
             font-size: 24px;
             user-select: none;
             animation: snow 10s linear infinite;
+            z-index: -1;  /* Snowflakes stay behind content */
         }
 
         @keyframes snow {
@@ -158,6 +159,11 @@
             to {
                 opacity: 1;
             }
+        }
+
+        /* Ensures scrolling is smooth for the entire body */
+        html {
+            scroll-behavior: smooth;
         }
     </style>
 </head>
@@ -261,7 +267,7 @@
             eventsList.innerHTML = '';
 
             try {
-                const response = await fetch('https://antimonopoli-api.vercel.app/winners');
+                const response = await fetch('http://localhost:4000/winners');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
