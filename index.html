@@ -135,25 +135,29 @@
         }
 
         function applyFilters() {
-            const checkedLastNames = Array.from(
-                checkboxContainer.querySelectorAll('.form-check-input:checked')
-            ).map(checkbox => removeAccents(checkbox.value.toLowerCase()));
+    // Get all checked checkboxes' last names
+    const checkedLastNames = Array.from(
+        checkboxContainer.querySelectorAll('.form-check-input:checked')
+    ).map(checkbox => removeAccents(checkbox.value.toLowerCase()));
 
-            if (checkedLastNames.length === 0) {
-                renderEvents(allEvents);
-                return;
-            }
+    if (checkedLastNames.length === 0) {
+        // If no checkbox is selected, show all events
+        renderEvents(allEvents);
+        return;
+    }
 
-            const filteredEvents = allEvents.filter(event =>
-                event.winners.some(winner => {
-                    const lastname = removeAccents(checkedLastNames[0]);
-                    const winnerNormalized = removeAccents(winner);
-                    return winnerNormalized.includes(lastname);
-                })
-            );
+    // Filter events based on the selected checkboxes
+    const filteredEvents = allEvents.filter(event =>
+        event.winners.some(winner => {
+            // Normalize both the last name and the winner's name
+            const winnerNormalized = removeAccents(winner.toLowerCase());
+            return checkedLastNames.some(lastName => winnerNormalized.includes(lastName));
+        })
+    );
 
-            renderEvents(filteredEvents);
-        }
+    // Render the filtered events
+    renderEvents(filteredEvents);
+}
 
         async function fetchWinners() {
             loader.style.display = 'block';
