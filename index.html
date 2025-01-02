@@ -91,6 +91,13 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             margin-bottom: 30px;
         }
+        .button-group {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+            flex-wrap: wrap; /* Allows the buttons to wrap on smaller screens */
+            justify-content: center; /* Centers the buttons */
+            margin-top: 10px;
+        }
 
         .form-check-label {
             color: #f39c12;
@@ -314,36 +321,56 @@
             const cleanedTitle = cleanTitle(event.eventTitle); // Get the cleaned event title
 
             eventElement.innerHTML = `
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <a href="${event.eventUrl}" target="_blank" class="event-title">${cleanedTitle}</a>
-                            <button class="btn btn-outline-secondary btn-sm copy-btn" title="Copy Title">
-                                <svg fill="#000000" height="15px" width="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-                                    viewBox="0 0 352.804 352.804" xml:space="preserve">
-                                <g>
-                                    <path d="M318.54,57.282h-47.652V15c0-8.284-6.716-15-15-15H34.264c-8.284,0-15,6.716-15,15v265.522c0,8.284,6.716,15,15,15h47.651
-                                        v42.281c0,8.284,6.716,15,15,15H318.54c8.284,0,15-6.716,15-15V72.282C333.54,63.998,326.824,57.282,318.54,57.282z
-                                        M49.264,265.522V30h191.623v27.282H96.916c-8.284,0-15,6.716-15,15v193.24H49.264z M303.54,322.804H111.916V87.282H303.54V322.804
-                                        z"/>
-                                </g>
-                                </svg>
-                            </button>
-                            <!-- Google Search Button -->
-                            <a href="https://www.google.com/search?q=${encodeURIComponent(cleanedTitle)}" target="_blank" class="btn btn-outline-primary btn-sm" title="Search on Google">
-                                🔍
-                            </a>
-                        </h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Winners</h6>
-                        <ul class="winners">
-                            ${event.winners.map(winner => `<li>${winner}</li>`).join('')}
-                        </ul>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="${event.eventUrl}" target="_blank" class="event-title">${cleanedTitle}</a>
+                    </h5>
+
+                    <!-- Buttons Row -->
+                    <div class="button-group">
+                        <!-- Copy Title Button -->
+                        <button class="btn btn-outline-secondary btn-sm copy-btn" title="Copy Title">
+                            <svg fill="#ffffff" height="15px" width="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                                viewBox="0 0 352.804 352.804" xml:space="preserve">
+                            <g>
+                                <path d="M318.54,57.282h-47.652V15c0-8.284-6.716-15-15-15H34.264c-8.284,0-15,6.716-15,15v265.522c0,8.284,6.716,15,15,15h47.651
+                                    v42.281c0,8.284,6.716,15,15,15H318.54c8.284,0,15-6.716,15-15V72.282C333.54,63.998,326.824,57.282,318.54,57.282z
+                                    M49.264,265.522V30h191.623v27.282H96.916c-8.284,0-15,6.716-15,15v193.24H49.264z M303.54,322.804H111.916V87.282H303.54V322.804
+                                    z"/>
+                            </g>
+                            </svg>
+                        </button>
+
+                        <!-- Google Search Button -->
+                        <a href="https://www.google.com/search?q=${encodeURIComponent(cleanedTitle)}" target="_blank" class="btn btn-outline-primary btn-sm" title="Search on Google">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="15px" height="15px">
+                                <path fill="#ffffff" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                                <path fill="#ffffff" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                                <path fill="#ffffff" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                                <path fill="#ffffff" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                            </svg>
+                        </a>
+
+                        <!-- Share Button -->
+                        <button class="btn btn-outline-info btn-sm share-btn" title="Share Event">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="15px" height="15px">
+                                <path fill="#ffffff" d="M 23 3 A 4 4 0 0 0 19 7 A 4 4 0 0 0 19.09375 7.8359375 L 10.011719 12.376953 A 4 4 0 0 0 7 11 A 4 4 0 0 0 3 15 A 4 4 0 0 0 7 19 A 4 4 0 0 0 10.013672 17.625 L 19.089844 22.164062 A 4 4 0 0 0 19 23 A 4 4 0 0 0 23 27 A 4 4 0 0 0 27 23 A 4 4 0 0 0 23 19 A 4 4 0 0 0 19.986328 20.375 L 10.910156 15.835938 A 4 4 0 0 0 11 15 A 4 4 0 0 0 10.90625 14.166016 L 19.988281 9.625 A 4 4 0 0 0 23 11 A 4 4 0 0 0 27 7 A 4 4 0 0 0 23 3 z"/>
+                            </svg>
+                        </button>
                     </div>
+
+                    <h6 class="card-subtitle mb-2 text-muted">Winners</h6>
+                    <ul class="winners">
+                        ${event.winners.map(winner => `<li>${winner}</li>`).join('')}
+                    </ul>
                 </div>
+            </div>
             `;
             eventsList.appendChild(eventElement);
         });
 
+        // Add copy functionality to all buttons
         document.querySelectorAll('.copy-btn').forEach(button => {
             button.addEventListener('click', (event) => {
                 const title = event.target.closest('.card-body').querySelector('.event-title').textContent;
@@ -366,6 +393,29 @@
                 }).catch(err => {
                     console.error('Error copying text:', err);
                 });
+            });
+        });
+
+        // Add share functionality
+        document.querySelectorAll('.share-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const title = event.target.closest('.card-body').querySelector('.event-title').textContent;
+                const url = event.target.closest('.card-body').querySelector('.event-title').getAttribute('href');
+
+                // Check if the share API is available
+                if (navigator.share) {
+                    navigator.share({
+                        title: title,
+                        url: url
+                    }).then(() => {
+                        console.log('Event shared successfully');
+                    }).catch(err => {
+                        console.error('Error sharing:', err);
+                    });
+                } else {
+                    // Fallback: Open the event URL in a new tab for sharing
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+                }
             });
         });
     }
