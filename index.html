@@ -204,6 +204,7 @@
         <div class="text-center my-4">
             <button id="selectAllButton" class="btn btn-success">Select All</button>
             <button id="deselectAllButton" class="btn btn-danger">Deselect All</button>
+            <button id="updateWinners" class="btn btn-info">Update Winners list</button>
         </div>
 
         <!-- Loader -->
@@ -227,6 +228,7 @@
             { gender: "Κος", firstname: "ιωαννης", lastname: "τσοπελας" },
             { gender: "Κα", firstname: "Δομνα", lastname: "Παντελιδου" },
             { gender: "Κος", firstname: "Γιωργος", lastname: "Ανδρεου" },
+            { gender: "Κος", firstname: "Πανος", lastname: "Αναστασοπουλος" },
         ];
 
         const eventsList = document.getElementById('events-list');
@@ -269,6 +271,10 @@
             );
 
             renderEvents(filteredEvents);
+        }
+
+        function updateWinners() {
+            fetch('https://antimonopoli-api.vercel.app/updateWinners');
         }
 
         async function fetchWinners() {
@@ -433,6 +439,10 @@
         document.getElementById('deselectAllButton').addEventListener('click', () => {
             document.querySelectorAll('.form-check-input').forEach(input => input.checked = false);
             applyFilters();
+        });
+
+        document.getElementById('updateWinners').addEventListener('click', () => {
+            updateWinners();
         });
 
         fetchWinners();
