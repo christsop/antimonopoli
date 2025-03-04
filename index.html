@@ -316,8 +316,8 @@
             let percentage = 0;
             
             const interval = setInterval(() => {
-                percentage += 2;
-                button.innerText = `Updating... ${percentage}%`;
+                percentage += 0.8; // Increment percentage gradually over 25 seconds
+                button.innerText = `Updating... ${Math.round(percentage)}%`;
                 
                 if (percentage >= 100) {
                     clearInterval(interval);
@@ -325,7 +325,7 @@
                     button.disabled = false;
                     location.reload();
                 }
-            }, 200);
+            }, 200); // Runs every 200ms
         }
 
         async function fetchWinners() {
