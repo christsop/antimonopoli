@@ -228,7 +228,7 @@
         <div class="text-center my-4">
             <button id="selectAllButton" class="btn btn-success">Select All</button>
             <button id="deselectAllButton" class="btn btn-danger">Deselect All</button>
-            <button id="updateWinners" class="btn btn-info" onclick="updateWinners()">Update Winners list</button>
+            <button id="updateWinners" class="btn btn-info">Update Winners list</button>
         </div>
 
         <!-- Loader -->
@@ -311,7 +311,6 @@
 
         function updateWinners() {
             fetch('https://antimonopoli-api.vercel.app/updateWinners');
-            
             const button = document.getElementById('updateWinners');
             button.disabled = true;
             let percentage = 0;
