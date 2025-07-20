@@ -217,12 +217,8 @@
             // 1. Serialize
             const jsonString = JSON.stringify(payload);
 
-            // 2. Encrypt
-            const encrypted = CryptoJS.AES.encrypt(jsonString, process.env.ENCRYPTION_KEY).toString();
-
-            // 3. Encode & send
             try {
-                await fetch(`${baseUrl}/register-statistics?payload=${encodeURIComponent(encrypted)}`);
+                await fetch(`${baseUrl}/register-statistics-antimonopoli?payload=${encodeURIComponent(jsonString)}`);
             } catch (error) {
                 console.error("registerStatistics failed", error);
             }
@@ -337,7 +333,6 @@
                 allEvents = await response.json();
                 renderCheckboxes(participants);
                 renderEvents(allEvents);
-                console.log(allEvents);
             } catch (error) {
                 console.error('Error fetching winners data:', error);
                 eventsList.innerHTML = '<div class="alert alert-danger">Error loading data. Please try again later.</div>';
