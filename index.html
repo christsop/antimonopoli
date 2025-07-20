@@ -122,36 +122,6 @@
             }
         }
 
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            color: #fff;
-            font-size: 24px;
-            user-select: none;
-            animation: snow 10s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes snow {
-            0% {
-                transform: translateX(0) translateY(0);
-            }
-
-            100% {
-                transform: translateX(100px) translateY(100vh);
-            }
-        }
-
-        .snowflake:nth-child(odd) {
-            animation-duration: 12s;
-            animation-delay: 1s;
-        }
-
-        .snowflake:nth-child(even) {
-            animation-duration: 14s;
-            animation-delay: 3s;
-        }
-
         .filters-section {
             animation: fadeIn 1s ease-in-out;
         }
@@ -205,17 +175,6 @@
 </head>
 
 <body>
-    <!-- Snowflakes animation -->
-    <div class="snowflake" style="left: 10%;">❄️</div>
-    <div class="snowflake" style="left: 20%;">❄️</div>
-    <div class="snowflake" style="left: 30%;">❄️</div>
-    <div class="snowflake" style="left: 40%;">❄️</div>
-    <div class="snowflake" style="left: 50%;">❄️</div>
-    <div class="snowflake" style="left: 60%;">❄️</div>
-    <div class="snowflake" style="left: 70%;">❄️</div>
-    <div class="snowflake" style="left: 80%;">❄️</div>
-    <div class="snowflake" style="left: 90%;">❄️</div>
-
     <div class="container py-5">
         <h1 class="text-center mb-4 header-title">Event Winners</h1>
 
@@ -239,19 +198,56 @@
     </div>
 
     <script>
+        const isLocal = window.location.hostname !== 'antimonopoli.vercel.app';
+        const endpointUrl = isLocal ? 'http://localhost:4000' : 'https://antimonopoli-api.vercel.app'
 
+        const registerStatistics = async (baseUrl, data, type) => {
+            const { country_name, city, latitude, longitude, userAgent } = data;
 
-        window.onload = function () {
-            const notification = document.createElement('div');
-            notification.className = 'alert';
-            notification.innerText = 'το update winners δουλευει';
+            const payload = {
+                country_name,
+                city,
+                latitude,
+                longitude,
+                type,
+                time: new Date(),
+                userAgent
+            };
 
-            document.body.appendChild(notification);
+            // 1. Serialize
+            const jsonString = JSON.stringify(payload);
 
-            setTimeout(() => {
-                notification.remove();
-            }, 5000);
+            // 2. Encrypt
+            const encrypted = CryptoJS.AES.encrypt(jsonString, process.env.ENCRYPTION_KEY).toString();
+
+            // 3. Encode & send
+            try {
+                await fetch(`${baseUrl}/register-statistics?payload=${encodeURIComponent(encrypted)}`);
+            } catch (error) {
+                console.error("registerStatistics failed", error);
+            }
+        };
+
+        const getGeoData = async () => {
+            try {
+                const res = await fetch("https://geolocation-db.com/json/");
+                const data = await res.json();
+                return data;
+            } catch (error) {
+                console.error("Failed to fetch geo data:", error);
+                return null;
+            }
+        };
+
+        const fetchGeoDataAndRegisterLoad = async () => {
+            const geoData = await getGeoData();
+            const userAgent = encodeURIComponent(navigator.userAgent);
+            const clientDataToStore = {...geoData, userAgent};
+            await registerStatistics('https://my-portfolio-backend-six.vercel.app', clientDataToStore, 'page-load-antimonopoli');
         }
+
+        fetchGeoDataAndRegisterLoad();
+
         const participants = [
             { gender: "Κος", firstname: "Χρήστος", lastname: "Τσοπέλας" },
             { gender: "Κος", firstname: "Λευτερης", lastname: "Μοριτς" },
@@ -310,7 +306,7 @@
         }
 
         function updateWinners() {
-            fetch('https://antimonopoli-api.vercel.app/updateWinners');
+            fetch(`${endpointUrl}/updateWinners`);
             const button = document.getElementById('updateWinners');
             button.disabled = true;
             let percentage = 0;
@@ -333,7 +329,7 @@
             eventsList.innerHTML = '';
 
             try {
-                const response = await fetch('https://antimonopoli-api.vercel.app/winners');
+                const response = await fetch(`${endpointUrl}/winners`);;
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -341,6 +337,7 @@
                 allEvents = await response.json();
                 renderCheckboxes(participants);
                 renderEvents(allEvents);
+                console.log(allEvents);
             } catch (error) {
                 console.error('Error fetching winners data:', error);
                 eventsList.innerHTML = '<div class="alert alert-danger">Error loading data. Please try again later.</div>';
